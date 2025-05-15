@@ -1,0 +1,332 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Canvas</title>
+  <link rel="icon" type="image/png" href="canvas.jpg.png" />
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      font-family: 'Arial', sans-serif;
+      background: url('https://i.pinimg.com/originals/62/39/4d/62394d753859943e6a1a36443ef78795.gif') no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      background: rgba(0, 0, 0, 0.85);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.5);
+      text-align: center;
+      animation: fadeIn 1s ease;
+      width: 90%;
+      max-width: 400px;
+      box-sizing: border-box;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    h1, h3 {
+      color: #ffffff;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 5px;
+      border: 1px solid #444;
+      background-color: #333;
+      color: white;
+      margin-bottom: 15px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    input::placeholder {
+      color: #aaaaaa;
+    }
+
+    button, .hub-button {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      background-color: #007bff;
+      color: white;
+      font-size: 16px;
+      padding: 12px;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+      margin-bottom: 15px;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    button:hover, .hub-button:hover {
+      background-color: #0056b3;
+      transform: translateY(-2px);
+    }
+
+    .button-icon {
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #feedbackButton { background-color: green; }
+    #feedbackButton:hover { background-color: darkgreen; }
+
+    #activatePanic { background-color: red; }
+    #activatePanic:hover { background-color: darkred; }
+
+    #shareButton { background-color: orange; }
+    #shareButton:hover { background-color: darkorange; }
+
+    #settingsButton {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background-color: black;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      font-size: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      z-index: 1000;
+    }
+
+    #hubContainer {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.9);
+      z-index: 1000;
+    }
+
+    #hubIframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    #backButton {
+      display: none;
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      z-index: 1001;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #backButton:hover {
+      background-color: #0056b3;
+    }
+
+    #settingsArea {
+      display: none;
+      position: fixed;
+      top: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 400px;
+      background: rgba(0, 0, 0, 0.9);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    @media (max-width: 768px) {
+      #settingsButton {
+        top: 10px;
+        left: 10px;
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+      }
+
+      h1 {
+        font-size: 20px;
+      }
+
+      button, .hub-button {
+        font-size: 14px;
+        padding: 10px;
+      }
+
+      #backButton {
+        width: 25px;
+        height: 25px;
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="passwordContainer" class="container">
+    <h1 id="promptText">Enter the Password</h1>
+    <input type="password" id="passwordInput" placeholder="Enter password" />
+    <button id="submitButton" onclick="checkPassword()">Submit</button>
+    <button onclick="forgotPassword()">Forgot Password?</button>
+  </div>
+
+  <div id="homeContainer" style="display: none;">
+    <button id="settingsButton" onclick="toggleSettingsArea()">⚙️</button>
+    <div class="container">
+      <h1>Welcome to Nexus</h1>
+      <button class="hub-button" onclick="openHub('https://iamsteve.raspberryip.com/')">
+        <span class="button-icon">🎓</span> Educational Hub
+      </button>
+      <button class="hub-button" onclick="openHub('https://canvas-login-instructure.github.io/')">
+        <span class="button-icon">📘</span> Canvas Hub
+      </button>
+      <button class="hub-button" onclick="openHub('https://coderkid4.github.io/nova/chat.html')">
+        <span class="button-icon">💬</span> Chat Room
+      </button>
+      <button class="hub-button" onclick="openHub('https://rovenshah.com')">
+        <span class="button-icon">📈</span> Crypto Tracker
+      </button>
+      <button class="hub-button" onclick="openHub('https://gn-math.github.io')">
+        <span class="button-icon">➕</span> Gn Math
+      </button>
+    </div>
+  </div>
+
+  <div id="hubContainer">
+    <iframe id="hubIframe" src="" title="Hub Content"></iframe>
+  </div>
+
+  <button id="backButton" onclick="closeHub()">⟲</button>
+
+  <div id="settingsArea">
+    <h3>Set Panic Link</h3>
+    <input type="url" id="panicLink" placeholder="Enter Panic Link" />
+    <input type="text" id="panicKey" placeholder="Enter Panic Key" />
+    <button id="activatePanic" onclick="activatePanic()">
+      <span class="button-icon">🚨</span> Activate Panic
+    </button>
+    <button id="feedbackButton" onclick="goToFeedbackForm()">
+      <span class="button-icon">✍️</span> Feedback Form
+    </button>
+    <button id="shareButton" onclick="copyShareLink()">
+      <span class="button-icon">🔗</span> Share Link
+    </button>
+  </div>
+
+  <script>
+    const correctPassword = '12345';
+    const passwordInput = document.getElementById('passwordInput');
+    const passwordContainer = document.getElementById('passwordContainer');
+    const homeContainer = document.getElementById('homeContainer');
+    const hubContainer = document.getElementById('hubContainer');
+    const hubIframe = document.getElementById('hubIframe');
+    const backButton = document.getElementById('backButton');
+    const settingsArea = document.getElementById('settingsArea');
+    const panicLinkInput = document.getElementById('panicLink');
+    const panicKeyInput = document.getElementById('panicKey');
+
+    let panicLink = '';
+    let panicKey = '';
+
+    function checkPassword() {
+      const input = passwordInput.value;
+      if (input === correctPassword) {
+        passwordContainer.style.display = 'none';
+        homeContainer.style.display = 'block';
+      } else {
+        alert('Incorrect Password. Try again.');
+      }
+    }
+
+    function forgotPassword() {
+      alert('Hint: Try "12345" 😉');
+    }
+
+    function toggleSettingsArea() {
+      if (settingsArea.style.display === 'none' || settingsArea.style.display === '') {
+        settingsArea.style.display = 'block';
+      } else {
+        settingsArea.style.display = 'none';
+      }
+    }
+
+    function openHub(url) {
+      hubIframe.src = url;
+      hubContainer.style.display = 'block';
+      backButton.style.display = 'flex';
+    }
+
+    function closeHub() {
+      hubContainer.style.display = 'none';
+      hubIframe.src = '';
+      backButton.style.display = 'none';
+    }
+
+    function activatePanic() {
+      panicLink = panicLinkInput.value;
+      panicKey = panicKeyInput.value;
+      if (panicLink && panicKey) {
+        alert(`Panic mode set.\nKey: ${panicKey}\nLink: ${panicLink}`);
+      } else {
+        alert('Please enter both a Panic Link and Panic Key.');
+      }
+    }
+
+    function goToFeedbackForm() {
+      window.open('https://forms.gle/your-feedback-link', '_blank'); // Replace this
+    }
+
+    function copyShareLink() {
+      const shareText = window.location.href;
+      navigator.clipboard.writeText(shareText).then(() => {
+        alert('Share link copied to clipboard!');
+      }).catch(() => {
+        alert('Failed to copy share link.');
+      });
+    }
+  </script>
+</body>
+</html>
